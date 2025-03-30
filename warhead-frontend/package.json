@@ -1,0 +1,40 @@
+{
+  "name": "warhead-frontend",
+  "version": "1.0.0",
+  "main": "index.ts",
+  "scripts": {
+    "start": "expo start",
+    "android": "expo start --android",
+    "ios": "expo start --ios",
+    "web": "expo start --web"
+  },
+  "dependencies": {
+    "@ethersproject/shims": "^5.8.0",
+    "@react-native-async-storage/async-storage": "^2.1.2",
+    "@react-navigation/native": "^7.0.19",
+    "@react-navigation/native-stack": "^7.3.3",
+    "@supabase/supabase-js": "^2.49.4",
+    "@types/node": "^22.13.14",
+    "crypto-browserify": "^3.12.1",
+    "ethers": "^5.8.0",
+    "expo": "~52.0.41",
+    "expo-clipboard": "^7.0.1",
+    "expo-constants": "^17.0.8",
+    "expo-secure-store": "^14.0.1",
+    "expo-status-bar": "~2.0.1",
+    "https-browserify": "^1.0.0",
+    "os-browserify": "^0.3.0",
+    "react": "18.3.1",
+    "react-native": "0.76.7",
+    "react-native-get-random-values": "^1.11.0",
+    "stream-browserify": "^3.0.0",
+    "stream-http": "^3.2.0",
+    "url": "^0.11.4"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.25.2",
+    "@types/react": "~18.3.12",
+    "typescript": "^5.3.3"
+  },
+  "private": true
+}

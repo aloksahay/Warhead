@@ -6,40 +6,32 @@
   "scripts": {
     "build": "tsc",
     "start": "node dist/server.js",
-    "dev": "ts-node src/server.ts",
-    "test:contract": "hardhat test",
-    "test:api": "mocha -r ts-node/register src/tests/**/*.test.ts",
-    "test": "npm run test:contract && npm run test:api",
-    "deploy": "hardhat run scripts/deploy.ts --network sepolia"
+    "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "@supabase/supabase-js": "^2.39.7",
+    "@types/chai": "^5.2.1",
+    "@types/cors": "^2.8.17",
+    "@types/express": "^4.17.21",
+    "@types/mocha": "^10.0.10",
+    "@types/node": "^20.11.25",
+    "@types/supertest": "^6.0.3",
+    "chai": "^5.2.0",
     "cors": "^2.8.5",
-    "ethers": "^6.11.1",
+    "dotenv": "^16.4.5",
+    "ethers": "^6.13.5",
     "express": "^4.18.3",
     "express-rate-limit": "^7.2.0",
     "helmet": "^7.1.0",
-    "jsonwebtoken": "^9.0.2"
+    "mocha": "^11.1.0",
+    "supertest": "^7.1.0",
+    "typescript": "^5.4.2"
   },
   "devDependencies": {
-    "@nomicfoundation/hardhat-toolbox": "^5.0.0",
-    "@openzeppelin/contracts": "^5.2.0",
-    "@types/chai": "^4.2.0",
-    "@types/cors": "^2.8.17",
-    "@types/express": "^4.17.21",
-    "@types/jsonwebtoken": "^9.0.6",
-    "@types/mocha": "^10.0.6",
-    "@types/node": "^20.11.28",
-    "@types/supertest": "^6.0.2",
-    "chai": "^4.5.0",
-    "dotenv": "^16.4.7",
-    "hardhat": "^2.22.1",
-    "mocha": "^10.3.0",
-    "supertest": "^6.3.4",
-    "ts-node": "^10.9.2",
-    "typescript": "^5.4.2"
+    "ts-node-dev": "^2.0.0"
   }
 }

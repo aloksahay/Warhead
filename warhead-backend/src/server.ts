@@ -4,6 +4,7 @@ import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import dotenv from 'dotenv';
 import { SupabaseService } from './services/supabase';
+import { PlayerService } from './services/PlayerService';
 
 dotenv.config();
 
@@ -20,19 +21,18 @@ app.use(cors({
 
 // Rate limiting
 const limiter = rateLimit({
-  windowMs: 15 * 1000, // 15 seconds for testing
-  max: 10, // limit each IP to 10 requests per windowMs
-  message: { error: 'Too many requests, please try again later.' }
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100 // limit each IP to 100 requests per windowMs
 });
-app.use('/api', limiter);
+app.use(limiter);
 
 // Body parsing middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Health check endpoint
-app.get('/api/health', (req, res) => {
-  res.status(200).json({ status: 'ok' });
+app.get('/health', (req, res) => {
+  res.json({ status: 'ok' });
 });
 
 // Authentication endpoints
@@ -160,10 +160,88 @@ app.post('/api/missiles/launch', async (req, res) => {
   }
 });
 
+// Player endpoints
+app.post('/api/players', async (req, res) => {
+  try {
+    const { walletAddress, nickname } = req.body;
+
+    if (!walletAddress || !nickname) {
+      return res.status(400).json({
+        error: 'Missing required fields',
+        details: { walletAddress: !walletAddress, nickname: !nickname }
+      });
+    }
+
+    // Check if nickname is available
+    const isAvailable = await PlayerService.isNicknameAvailable(nickname);
+    if (!isAvailable) {
+      return res.status(409).json({
+        error: 'Nickname already taken',
+        details: { nickname }
+      });
+    }
+
+    const player = await PlayerService.createPlayer(walletAddress, nickname);
+    if (!player) {
+      return res.status(500).json({
+        error: 'Failed to create player',
+        details: 'Player creation returned null'
+      });
+    }
+
+    res.status(201).json(player);
+  } catch (error: any) {
+    console.error('Error creating player:', error);
+    res.status(500).json({
+      error: 'Failed to create player',
+      details: error.message || 'Unknown error occurred'
+    });
+  }
+});
+
+app.get('/api/players/:walletAddress', async (req, res) => {
+  try {
+    const { walletAddress } = req.params;
+    const player = await PlayerService.getPlayerByWallet(walletAddress);
+
+    if (!player) {
+      return res.status(404).json({
+        error: 'Player not found',
+        details: { walletAddress }
+      });
+    }
+
+    res.json(player);
+  } catch (error: any) {
+    console.error('Error getting player:', error);
+    res.status(500).json({
+      error: 'Failed to get player',
+      details: error.message || 'Unknown error occurred'
+    });
+  }
+});
+
+app.get('/api/players/check-nickname/:nickname', async (req, res) => {
+  try {
+    const { nickname } = req.params;
+    const isAvailable = await PlayerService.isNicknameAvailable(nickname);
+    res.json({ available: isAvailable });
+  } catch (error: any) {
+    console.error('Error checking nickname:', error);
+    res.status(500).json({
+      error: 'Failed to check nickname availability',
+      details: error.message || 'Unknown error occurred'
+    });
+  }
+});
+
 // Error handling middleware
-app.use((err: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {
-  console.error(err.stack);
-  res.status(500).json({ error: 'Something broke!' });
+app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+  console.error('Unhandled error:', err);
+  res.status(500).json({
+    error: 'Internal server error',
+    details: err.message || 'An unexpected error occurred'
+  });
 });
 
 // Start server if this file is run directly
